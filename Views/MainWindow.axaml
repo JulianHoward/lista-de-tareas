@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TodoApp.ViewModels"
+        x:Class="TodoApp.Views.MainWindow"
+        x:CompileBindings="False"
+        Icon="/Assets/app-icon.ico"
+        Title="Lista de Tareas"
+        Width="480" Height="620"
+        MinWidth="380" MinHeight="420"
+        WindowStartupLocation="CenterScreen">
+
+    <!-- x:CompileBindings="False": usamos enlaces por reflexión, más simples
+         para un proyecto de aprendizaje. -->
+
+    <!-- Estilos locales de esta ventana -->
+    <Window.Styles>
+        <!-- Cuando una tarea está completada, su texto se tacha y se pone gris -->
+        <Style Selector="TextBlock.done">
+            <Setter Property="TextDecorations" Value="Strikethrough" />
+            <Setter Property="Foreground" Value="#9AA0A6" />
+        </Style>
+    </Window.Styles>
+
+    <!-- Diseño en 3 filas: encabezado / lista (crece) / pie -->
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+
+        <!-- ================= ENCABEZADO ================= -->
+        <StackPanel Grid.Row="0" Spacing="12">
+            <TextBlock Text="📋 Mis Tareas"
+                       FontSize="26" FontWeight="Bold" />
+
+            <!-- Fila para escribir y agregar una tarea -->
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBox Grid.Column="0"
+                         Margin="0,0,8,0"
+                         Watermark="Escribe una tarea y presiona Enter..."
+                         Text="{Binding NewTodoTitle}">
+                    <!-- Presionar Enter ejecuta el mismo comando que el botón -->
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding AddCommand}" />
+                    </TextBox.KeyBindings>
+                </TextBox>
+
+                <Button Grid.Column="1"
+                        Content="Agregar"
+                        Command="{Binding AddCommand}" />
+            </Grid>
+        </StackPanel>
+
+        <!-- ================= LISTA DE TAREAS ================= -->
+        <Border Grid.Row="1" Margin="0,14"
+                BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="8">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Todos}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Cada tarea es una fila -->
+                            <Border Padding="10,8" BorderBrush="#F0F0F0" BorderThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+
+                                    <!-- Casilla de completada -->
+                                    <CheckBox Grid.Column="0"
+                                              VerticalAlignment="Center"
+                                              IsChecked="{Binding IsCompleted}" />
+
+                                    <!-- MODO NORMAL: muestra el texto de la tarea -->
+                                    <TextBlock Grid.Column="1"
+                                               Margin="8,0,8,0"
+                                               VerticalAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               Text="{Binding Title}"
+                                               Classes.done="{Binding IsCompleted}"
+                                               IsVisible="{Binding !IsEditing}" />
+
+                                    <!-- MODO EDICIÓN: muestra un cuadro para cambiar el texto -->
+                                    <TextBox Grid.Column="1"
+                                             Margin="8,0,8,0"
+                                             Text="{Binding Title}"
+                                             IsVisible="{Binding IsEditing}">
+                                        <TextBox.KeyBindings>
+                                            <KeyBinding Gesture="Enter"
+                                                        Command="{Binding DataContext.SaveEditCommand,
+                                                                  RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding}" />
+                                        </TextBox.KeyBindings>
+                                    </TextBox>
+
+                                    <!-- Botón Editar / Guardar (cambia según el modo) -->
+                                    <Button Grid.Column="2"
+                                            Margin="0,0,6,0"
+                                            Content="✏️"
+                                            ToolTip.Tip="Editar"
+                                            IsVisible="{Binding !IsEditing}"
+                                            Command="{Binding DataContext.StartEditCommand,
+                                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}" />
+                                    <Button Grid.Column="2"
+                                            Margin="0,0,6,0"
+                                            Content="💾"
+                                            ToolTip.Tip="Guardar"
+                                            IsVisible="{Binding IsEditing}"
+                                            Command="{Binding DataContext.SaveEditCommand,
+                                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}" />
+
+                                    <!-- Botón Eliminar -->
+                                    <Button Grid.Column="3"
+                                            Content="🗑️"
+                                            ToolTip.Tip="Eliminar"
+                                            Command="{Binding DataContext.DeleteCommand,
+                                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!-- ================= PIE ================= -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0"
+                       VerticalAlignment="Center"
+                       Foreground="#5F6368"
+                       Text="{Binding StatusText}" />
+
+            <Button Grid.Column="1"
+                    Content="Limpiar completadas"
+                    Command="{Binding ClearCompletedCommand}" />
+        </Grid>
+    </Grid>
+</Window>

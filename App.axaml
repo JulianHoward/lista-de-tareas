@@ -1,0 +1,10 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TodoApp.App"
+             RequestedThemeVariant="Light">
+    <!-- RequestedThemeVariant="Light" fuerza el tema claro. Puede ser "Dark" o "Default". -->
+
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+</Application>

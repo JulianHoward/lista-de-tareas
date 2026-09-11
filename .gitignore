@@ -1,0 +1,19 @@
+# Carpetas generadas al compilar (NO se suben; se recrean solas)
+bin/
+obj/
+publish/
+
+# Salida del instalador de Inno Setup
+installer/Output/
+
+# Archivos de usuario / configuración local de VS y VS Code
+.vs/
+*.user
+*.suo
+
+# Base de datos local de pruebas (por si llegara a quedar en la carpeta)
+*.db
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
